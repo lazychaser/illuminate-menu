@@ -1,11 +1,18 @@
 Laravel Menu Builder
 --------------------
 
-**A menu builder for Laravel using Bootstrap's markup.**
+**A menu builder for Laravel using [Bootstrap][twbs]'s markup.**
 
 [![Build Status](https://travis-ci.org/lazychaser/illuminate-menu.png?branch=master)](https://travis-ci.org/lazychaser/illuminate-menu)
 [![Latest Stable Version](https://poser.pugx.org/kalnoy/illuminate-menu/version.png)](https://packagist.org/packages/kalnoy/illuminate-menu)
 [![Total Downloads](https://poser.pugx.org/kalnoy/illuminate-menu/d/total.png)](https://packagist.org/packages/kalnoy/illuminate-menu)
+
+**[Документация на Русском](README-RU.md)**
+
+Note that this package is shipped with no styles nor scripts, you have to download them manually from [Twitter 
+Bootstrap's][twbs] site.
+ 
+[twbs]: http://getbootstrap.com Twitter Bootstrap
 
 Installation
 ============
