@@ -43,6 +43,12 @@ Rendering a menu:
 
 Where `$attributes` is optional array of html attributes for `ul` element.
 
+Rendering a list of menu items:
+
+```php
+<ul>{{ Menu::items($items) }}</ul>
+```
+
 Rendering a single menu item:
 
 ```php

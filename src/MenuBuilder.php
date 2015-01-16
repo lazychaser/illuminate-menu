@@ -85,32 +85,29 @@ class MenuBuilder {
      */
     public function render(array $items, array $options = [ 'class' => 'nav' ])
     {
-        $items = $this->normalizeItems($items);
+        $items = $this->items($items);
 
         if (empty($items)) return '';
 
-        return $this->renderMenu($items, $options);
+        $options = $this->html->attributes($options);
+
+        return '<ul'.$options.'>'.$items.PHP_EOL.'</ul>';
     }
 
     /**
-     * Render a menu with normalized items.
+     * Render a list of menu items.
      *
-     * @param array  $items
-     * @param array $options
+     * @param array $items
      *
      * @return string
      */
-    protected function renderMenu(array $items, array $options)
+    public function items(array $items)
     {
-        $html = array_reduce($items, function ($carry, $item)
+        return array_reduce($this->normalizeItems($items), function ($carry, $item)
         {
             return $carry.PHP_EOL.$this->renderItem($item);
 
         }, '');
-
-        $options = $this->html->attributes($options);
-
-        return '<ul'.$options.'>'.$html.PHP_EOL.'</ul>';
     }
 
     /**
