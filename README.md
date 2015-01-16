@@ -12,7 +12,7 @@ Laravel Menu Builder
 Note that this package is shipped with no styles nor scripts, you have to download them manually from [Twitter 
 Bootstrap's][twbs] site.
  
-[twbs]: http://getbootstrap.com Twitter Bootstrap
+[twbs]: http://getbootstrap.com "Twitter Bootstrap"
 
 Installation
 ============

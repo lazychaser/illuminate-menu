@@ -1,12 +1,12 @@
 Laravel Menu Builder
 --------------------
 
-**Билдер меню для Laravel под разметку [Bootstrap][bootstrap].**
+**Билдер меню для Laravel под разметку [Bootstrap][twbs].**
 
 Обратите внимание, что расширение поставляется без каких либо стилей и скриптов, их нужно отдельно установить с сайта
- [Twitter Bootstrap][bootstrap], или сделать своё оформление на основе правил, которые задает это фреймфорк.
+ [Twitter Bootstrap][twbs], или сделать своё оформление на основе правил, которые задает это фреймфорк.
  
-[bootstrap]: http://getbootstrap.com Twitter Bootstrap
+[twbs]: http://getbootstrap.com "Twitter Bootstrap"
 
 Установка
 =========
