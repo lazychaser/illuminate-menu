@@ -39,12 +39,12 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $v7 = $this->builder->item([ 'visible' => false ]);
         $v8 = $this->builder->item([ 'visible' => true, 'url' => 'bar' ]);
         $v9 = $this->builder->item([ 'visible' => function () { return false; } ]);
-        $v10 = $this->builder->item([ 'disabled' => true, 'class' => 'test', 'url' => 'bar' ]);
-        $v11 = $this->builder->item([ 'disabled' => function () { return true; }, 'url' => 'bar' ]);
+        $v10 = $this->builder->item([ 'active' => true, 'class' => 'test', 'url' => 'bar' ]);
+        $v11 = $this->builder->item([ 'active' => function () { return true; }, 'url' => 'bar' ]);
         $v12 = $this->builder->item([ 'url' => 'bar', 'rel' => 'baz' ]);
         $v13 = $this->builder->item([ 'label' => 'foo' ]);
-        $v14 = $this->builder->item([ 'active' => true, 'url' => 'bar' ]);
-        $v15 = $this->builder->item([ 'active' => function () { return true; }, 'url' => 'bar' ]);
+        $v14 = $this->builder->item([ 'disabled' => true, 'url' => 'bar' ]);
+        $v15 = $this->builder->item([ 'disabled' => function () { return true; }, 'url' => 'bar' ]);
 
         $this->assertEquals('<li><a href="bar">foo</a></li>', $v1);
         $this->assertEquals('<li><a href="bar"></a></li>', $v2);
@@ -72,20 +72,21 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $def = '<ul class="nav">'.PHP_EOL.'<li><a href="bar">foo</a></li>'.PHP_EOL.'</ul>';
 
         $v1 = $this->builder->render([ 'foo' => 'bar' ]);
-        $v2 = $this->builder->render([ [ 'url' => 'bar', 'label' => 'foo' ] ]);
-        $v3 = $this->builder->render([ '-', 'foo' => 'bar', '-', [ 'visible' => false ], '-', '-', 'baz' => 'bar' ], []);
-        $v4 = $this->builder->render([]);
+        $v3 = $this->builder->render([ [ 'url' => 'bar', 'label' => 'foo' ] ]);
+        $v4 = $this->builder->render([ '-', 'foo' => 'bar', '-', [ 'visible' => false ], '-', '-', 'baz' => 'bar' ],
+            []);
+        $v5 = $this->builder->render([]);
 
         $this->assertEquals($def, $v1);
-        $this->assertEquals($def, $v2);
+        $this->assertEquals($def, $v3);
 
         $this->assertEquals('<ul>'.PHP_EOL.
             '<li><a href="bar">foo</a></li>'.PHP_EOL.
             '<li class="divider"></li>'.PHP_EOL.
             '<li><a href="bar">baz</a></li>'.PHP_EOL.
-            '</ul>', $v3);
+            '</ul>', $v4);
 
-        $this->assertEquals('', $v4);
+        $this->assertEquals('', $v5);
     }
 
     public function testDropdown()

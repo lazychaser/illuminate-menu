@@ -59,6 +59,11 @@ class MenuBuilder {
     public $dropdownClass = 'dropdown-menu';
 
     /**
+     * @var array
+     */
+    public $dropdownLinkAttributes = [ 'class' => 'dropdown-toggle', 'data-toggle' => 'dropdown' ];
+
+    /**
      * Initialize the builder.
      *
      * @param HtmlBuilder $html
@@ -267,8 +272,7 @@ class MenuBuilder {
 
         if (isset($options['items']))
         {
-            $attributes['class'] = 'dropdown-toggle';
-            $attributes['data-toggle'] = 'dropdown';
+            $attributes = $this->mergeAttributes($attributes, $this->dropdownLinkAttributes);
 
             $label .= ' '.$this->caret();
         }
@@ -512,4 +516,21 @@ class MenuBuilder {
             : $className;
     }
 
+    /**
+     * @param array $attributes
+     * @param array $extra
+     *
+     * @return array
+     */
+    protected function mergeAttributes(array $attributes, array $extra)
+    {
+        if (isset($extra['class']))
+        {
+            $this->appendClass($attributes, $extra['class']);
+
+            unset($extra['class']);
+        }
+
+        return array_merge($attributes, $extra);
+    }
 }

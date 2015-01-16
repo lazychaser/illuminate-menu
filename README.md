@@ -35,12 +35,21 @@ And a facade:
 Documentation
 =============
 
-Base methods:
+Rendering a menu:
 
-* `Menu::render($items, $attributes);` -- render a menu
-* `Menu::item($options);` -- render a menu item
+```php
+{{ Menu::render($items, $attributes) }}
+```
 
-Rendering basic items:
+Where `$attributes` is optional array of html attributes for `ul` element.
+
+Rendering a single menu item:
+
+```php
+{{ Menu::item($options) }}
+```
+
+Basic example:
 
 ```php
 Menu::render([
@@ -51,19 +60,54 @@ Menu::render([
 ]);
 ```
 
-### Item options
+Rendering an item with a drop down menu:
 
-*   `label` -- a label of the item, automatically translated, so you can specify lang string id
-*   `url` -- the url which can be a full URI or local path
-*   `route` -- specify a route, possibly with parameters
-*   `secure` -- specify `true` to make `url` be secure (doesn't affect `route` option)
-*   `items` -- an array of items for drop down menu
+```php
+{{ Menu::item([
+    'label' => 'Settings',
+    'icon' => 'wrench',
+    'items' => [
+        'Foo' => 'bar',
+        '-', // divider
+        [ 'label' => 'Logout', 'route' => 'logout_path' ],
+    ],
+]) }}
+```
 
-*   `visible` -- boolean value or closure to specify whether the item is visible
-*   `active` -- boolean value or closure to specify whether to add `active` class to item; if not specified, determined
+Controlling whether the item is visible:
+
+```php
+{{ Menu::item([
+    'label' => 'Foo',
+    'url' => 'bar',
+    'visible' => function () { return Config::get('app.debug'); },
+] }}
+```
+
+#### Item options
+
+You can specify an array of following options:
+
+*   `label` is a label of the item, automatically translated, so you can specify lang string id
+*   `url` is the url which can be a full URI or local path
+*   `route` to specify a route, possibly with parameters
+*   `secure`; specify `true` to make `url` be secure (doesn't affect `route` option)
+*   `items` is an array of items for drop down menu
+
+Changing the state of the item:
+
+*   `visible` is a boolean value or closure to specify whether the item is visible
+*   `active` is a boolean value or closure to specify whether to add `active` class to item; if not specified, determined
     automatically based on current url
-*   `disabled` -- boolean value or closure to specify whether the menu item is disabled
-    
-*   `icon` -- a glyphicon id, i.e. `pencil`
-*   `badge` -- a value of badge (scalar or closure)
-*   any other parameter that will be put as attribute of `<li>` element.
+*   `disabled` is a boolean value or closure to specify whether the menu item is disabled
+
+Presentation options:
+
+*   `icon` is a glyphicon id, i.e. `pencil`
+*   `badge` is a value for badge (scalar or closure)
+*   and any other parameter that will be rendered as an attribute for `<li>` element.
+
+### Customization
+
+Though this menu builder intended to be used together with bootstrap markup, you can customize it however you like by
+extending `Illuminate\Html\MenuBuilder` class and overriding base methods.
