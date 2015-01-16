@@ -22,7 +22,7 @@
 
     <filter>
         <whitelist>
-            <directory>./src</directory>
+            <file>./src/MenuBuilder.php</file>
         </whitelist>
     </filter>
 </phpunit>

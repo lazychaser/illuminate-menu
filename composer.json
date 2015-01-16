@@ -27,7 +27,10 @@
     },
 
     "autoload": {
-        "psr-4": { "Illuminate\\Html\\": "src/" }
+        "psr-4": {
+            "Illuminate\\Html\\": "src/",
+            "Illuminate\\Service\\Facades\\": "facade/"
+        }
     },
 
     "minimum-stability": "stable"

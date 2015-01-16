@@ -28,7 +28,7 @@ And a facade:
 
 ```php
 'aliases' => [
-    'Menu' => 'Illuminate\Html\MenuFacade',
+    'Menu' => 'Illuminate\Support\Facades\Menu',
 ],
 ```
 
@@ -52,8 +52,12 @@ Rendering a list of menu items:
 Rendering a single menu item:
 
 ```php
+{{ Menu::item($label, $url) }}
+{{ Menu::item($label, $options) }}
 {{ Menu::item($options) }}
 ```
+
+See a list of available options [below](#item-options).
 
 Basic example:
 
@@ -62,7 +66,7 @@ Menu::render([
     'Link to url' => 'bar',
     'Link to external url' => 'http://bar',
     [ 'label' => 'Link to url', 'url' => 'bar' ],
-    [ 'label' => 'Link to route', 'route' => [ 'route.name', 'foo' => 'bar' ] ],
+    'Link to route' => [ 'route' => [ 'route.name', 'foo' => 'bar' ] ],
 ]);
 ```
 
@@ -75,7 +79,7 @@ Rendering an item with a drop down menu:
     'items' => [
         'Foo' => 'bar',
         '-', // divider
-        [ 'label' => 'Logout', 'route' => 'logout_path' ],
+        'Logout' => [ 'route' => 'logout_path' ],
     ],
 ]) }}
 ```

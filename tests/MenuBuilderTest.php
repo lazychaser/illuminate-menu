@@ -26,12 +26,13 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
     {
         $url = $this->mockUrlGenerator();
 
-        $url->shouldReceive('to')->with('bar', [], false)->times(11)->andReturn('bar');
+        $url->shouldReceive('to')->with('bar', [], true)->andReturn('https://bar');
+        $url->shouldReceive('to')->with('bar', [], false)->times(10)->andReturn('bar');
         $url->shouldReceive('route')->with('bar')->andReturn('bar');
         $url->shouldReceive('current')->andReturn('current');
 
-        $v1 = $this->builder->item([ 'label' => 'foo', 'url' => 'bar' ]);
-        $v2 = $this->builder->item([ 'url' => 'bar' ]);
+        $v1 = $this->builder->item('foo', [ 'url' => 'bar', 'secure' => true ]);
+        $v2 = $this->builder->item('foo', 'bar');
         $v3 = $this->builder->item([ 'label' => 'foo', 'url' => 'bar', 'icon' => 'baz' ]);
         $v4 = $this->builder->item([ 'label' => 'foo', 'url' => 'bar', 'badge' => 1 ]);
         $v5 = $this->builder->item([ 'label' => 'foo', 'url' => 'bar', 'badge' => function () { return 1; } ]);
@@ -45,9 +46,10 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $v13 = $this->builder->item([ 'label' => 'foo' ]);
         $v14 = $this->builder->item([ 'disabled' => true, 'url' => 'bar' ]);
         $v15 = $this->builder->item([ 'disabled' => function () { return true; }, 'url' => 'bar' ]);
+        $v16 = $this->builder->item('-');
 
-        $this->assertEquals('<li><a href="bar">foo</a></li>', $v1);
-        $this->assertEquals('<li><a href="bar"></a></li>', $v2);
+        $this->assertEquals('<li><a href="https://bar">foo</a></li>', $v1);
+        $this->assertEquals('<li><a href="bar">foo</a></li>', $v2);
         $this->assertEquals('<li><a href="bar"><span class="glyphicon glyphicon-baz"></span> foo</a></li>', $v3);
         $this->assertEquals('<li><a href="bar">foo <span class="badge">1</span></a></li>', $v4);
         $this->assertEquals('<li><a href="bar">foo <span class="badge">1</span></a></li>', $v5);
@@ -61,6 +63,7 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('<li><a href="current">foo</a></li>', $v13);
         $this->assertEquals('<li class="disabled"><a href="bar"></a></li>', $v14);
         $this->assertEquals('<li class="disabled"><a href="bar"></a></li>', $v15);
+        $this->assertEquals('<li class="divider"></li>', $v16);
     }
 
     public function testRender()

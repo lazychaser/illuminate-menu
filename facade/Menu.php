@@ -1,17 +1,15 @@
 <?php
 
-namespace Illuminate\Html;
-
-use Illuminate\Support\Facades\Facade;
+namespace Illuminate\Support\Facades;
 
 /**
- * Class MenuFacade
+ * Class Menu
  *
  * @see \Illuminate\Html\MenuBuilder
  *
- * @package Illuminate\Html
+ * @package Illuminate\Support\Facades
  */
-class MenuFacade extends Facade {
+class Menu extends Facade {
 
     /**
      * @return string

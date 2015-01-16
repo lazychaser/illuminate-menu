@@ -145,14 +145,14 @@ class MenuBuilder {
         {
             if (is_string($key))
             {
-                $value = [ 'label' => $key, 'items' => $value ];
+                $value['label'] = $key;
             }
 
             if (isset($value['items']))
             {
                 $value['items'] = $this->normalizeItems($value['items']);
 
-                if (empty($value['items'])) return null;
+                if (empty($value['items'])) unset($value['items']);
             }
 
             return $value;
@@ -198,14 +198,23 @@ class MenuBuilder {
     }
 
     /**
-     * Render item.
+     * Render an item.
      *
-     * @param array $data
+     * @param string|array $label
+     * @param string|array|null $url
      *
      * @return string
      */
-    public function item(array $data)
+    public function item($label, $url = null)
     {
+        if (is_null($url))
+        {
+            $url = $label;
+            $label = null;
+        }
+
+        $data = $this->normalizeItem($label, $url);
+
         if ( ! $this->isVisible($data)) return '';
 
         return $this->renderItem($data);
@@ -223,7 +232,7 @@ class MenuBuilder {
         if ($options === '-') return $this->divider();
 
         $href = $this->getHref($options);
-        $link = $this->getLink($href, $options);
+        $link = $this->renderLink($href, $options);
 
         $attributes = array_except($options, $this->reserved);
 
@@ -256,7 +265,7 @@ class MenuBuilder {
      *
      * @return string
      */
-    protected function getLink($href, array $options)
+    protected function renderLink($href, array $options)
     {
         $attributes = compact('href');
 
