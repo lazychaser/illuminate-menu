@@ -16,10 +16,10 @@
 
     "require": {
         "php": ">=5.4.0",
-        "illuminate/html": "4.2.*",
-        "illuminate/routing": "4.2.*",
-        "illuminate/http": "4.2.*",
-        "illuminate/support": "4.2.*"
+        "illuminate/html": ">=4.2.0,<5.1.0",
+        "illuminate/routing": ">=4.2.0,<5.1.0",
+        "illuminate/http": ">=4.2.0,<5.1.0",
+        "illuminate/support": ">=4.2.0,<5.1.0"
     },
 
     "require-dev": {
