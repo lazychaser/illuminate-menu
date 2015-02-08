@@ -1,7 +1,7 @@
 Laravel Menu Builder
 --------------------
 
-**A menu builder for Laravel using [Bootstrap][twbs]'s markup.**
+**A menu builder for Laravel 4-5 using [Bootstrap][twbs]'s markup.**
 
 [![Build Status](https://travis-ci.org/lazychaser/illuminate-menu.png?branch=master)](https://travis-ci.org/lazychaser/illuminate-menu)
 [![Latest Stable Version](https://poser.pugx.org/kalnoy/illuminate-menu/version.png)](https://packagist.org/packages/kalnoy/illuminate-menu)
@@ -45,7 +45,7 @@ Documentation
 Rendering a menu:
 
 ```php
-{{ Menu::render($items, $attributes) }}
+{!! Menu::render($items, $attributes) !!}
 ```
 
 Where `$attributes` is optional array of html attributes for `ul` element.
@@ -53,15 +53,15 @@ Where `$attributes` is optional array of html attributes for `ul` element.
 Rendering a list of menu items:
 
 ```php
-<ul>{{ Menu::items($items) }}</ul>
+<ul>{!! Menu::items($items) !!}</ul>
 ```
 
 Rendering a single menu item:
 
 ```php
-{{ Menu::item($label, $url) }}
-{{ Menu::item($label, $options) }}
-{{ Menu::item($options) }}
+{!! Menu::item($label, $url) !!}
+{!! Menu::item($label, $options) !!}
+{!! Menu::item($options) !!}
 ```
 
 See a list of available options [below](#item-options).
@@ -80,7 +80,7 @@ Menu::render([
 Rendering an item with a drop down menu:
 
 ```php
-{{ Menu::item([
+{!! Menu::item([
     'label' => 'Settings',
     'icon' => 'wrench',
     'items' => [
@@ -88,17 +88,17 @@ Rendering an item with a drop down menu:
         '-', // divider
         'Logout' => [ 'route' => 'logout_path' ],
     ],
-]) }}
+]) !!}
 ```
 
 Controlling whether the item is visible:
 
 ```php
-{{ Menu::item([
+{!! Menu::item([
     'label' => 'Foo',
     'url' => 'bar',
     'visible' => function () { return Config::get('app.debug'); },
-] }}
+] !!}
 ```
 
 #### Item options
