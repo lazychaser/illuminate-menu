@@ -20,9 +20,9 @@ class MenuServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app->bindShared('menu', function ($app)
+		$this->app->singleton('menu', function ($app)
         {
-            $menu = new MenuBuilder($app->make('html'), $app->make('request'));
+            $menu = new MenuBuilder($app->make('request'));
 
             $menu->setUrlGenerator($app->make('url'));
             $menu->setTranslator($app->make('translator'));

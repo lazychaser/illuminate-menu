@@ -14,11 +14,6 @@ class MenuBuilder {
     protected $url;
 
     /**
-     * @var HtmlBuilder
-     */
-    protected $html;
-
-    /**
      * @var Request
      */
     protected $request;
@@ -66,12 +61,10 @@ class MenuBuilder {
     /**
      * Initialize the builder.
      *
-     * @param HtmlBuilder $html
      * @param Request $request
      */
-    public function __construct(HtmlBuilder $html, Request $request = null)
+    public function __construct(Request $request = null)
     {
-        $this->html = $html;
         $this->request = $request;
     }
 
@@ -89,9 +82,26 @@ class MenuBuilder {
 
         if (empty($items)) return '';
 
-        $options = $this->html->attributes($options);
+        $options = $this->attributes($options);
 
         return '<ul'.$options.'>'.$items.PHP_EOL.'</ul>';
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return string
+     */
+    protected function attributes(array $options)
+    {
+        $html = '';
+
+        foreach ($options as $key => $value)
+        {
+            $html .= ' '.$key.'="'.e($value).'"';
+        }
+
+        return $html;
     }
 
     /**
@@ -246,7 +256,7 @@ class MenuBuilder {
             $this->appendClass($attributes, $this->disabledClass);
         }
 
-        $attributes = $this->html->attributes($attributes);
+        $attributes = $this->attributes($attributes);
 
         $html = '<li'.$attributes.'>'.$link;
 
@@ -269,7 +279,7 @@ class MenuBuilder {
     {
         $attributes = compact('href');
 
-        $label = $this->html->entities($this->getLabel($options));
+        $label = e($this->getLabel($options));
 
         if (isset($options['badge']))
         {
@@ -288,7 +298,7 @@ class MenuBuilder {
             $label = $this->icon($options['icon']).' '.$label;
         }
 
-        return '<a'.$this->html->attributes($attributes).'>'.$label.'</a>';
+        return '<a'.$this->attributes($attributes).'>'.$label.'</a>';
     }
 
     /**
