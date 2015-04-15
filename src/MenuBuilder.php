@@ -2,6 +2,7 @@
 
 namespace Illuminate\Html;
 
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Routing\UrlGenerator;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -71,12 +72,12 @@ class MenuBuilder {
     /**
      * Render the menu.
      *
-     * @param array $items
+     * @param mixed $items
      * @param array $options
      *
      * @return string
      */
-    public function render(array $items, array $options = [ 'class' => 'nav' ])
+    public function render($items, array $options = [ 'class' => 'nav' ])
     {
         $items = $this->items($items);
 
@@ -107,11 +108,11 @@ class MenuBuilder {
     /**
      * Render a list of menu items.
      *
-     * @param array $items
+     * @param mixed $items
      *
      * @return string
      */
-    public function items(array $items)
+    public function items($items)
     {
         return array_reduce($this->normalizeItems($items), function ($carry, $item)
         {
@@ -123,15 +124,15 @@ class MenuBuilder {
     /**
      * Normalize items.
      *
-     * @param array $items
+     * @param mixed $items
      *
      * @return array
      */
-    protected function normalizeItems(array $items)
+    protected function normalizeItems($items)
     {
         $data = [];
 
-        foreach ($items as $key => $value)
+        foreach ($this->getArrayable($items) as $key => $value)
         {
             if ($item = $this->normalizeItem($key, $value)) $data[] = $item;
         }
@@ -167,8 +168,12 @@ class MenuBuilder {
 
             return $value;
         }
+        elseif (is_string($value))
+        {
+            return [ 'label' => $key, 'url' => $value ];
+        }
 
-        return [ 'label' => $key, 'url' => $value ];
+        throw new \InvalidArgumentException("Unknown menu item type.");
     }
 
     /**
@@ -428,6 +433,8 @@ class MenuBuilder {
      */
     protected function hrefFromUrl($url, $secure)
     {
+        if ( ! $this->url) return $url;
+
         if ( ! is_array($url)) return $this->url->to($url, [], $secure);
 
         return $this->url->to($url[0], array_splice($url, 1), $secure);
@@ -548,5 +555,19 @@ class MenuBuilder {
         }
 
         return array_merge($attributes, $extra);
+    }
+
+    /**
+     * @param $items
+     *
+     * @return mixed
+     */
+    protected function getArrayable($items)
+    {
+        if (is_array($items)) return $items;
+
+        if ($items instanceof \IteratorAggregate) return $items;
+
+        throw new \InvalidArgumentException("Unknown menu items type.");
     }
 }

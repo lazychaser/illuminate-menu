@@ -149,4 +149,5 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
 
         return $url;
     }
+
 }
