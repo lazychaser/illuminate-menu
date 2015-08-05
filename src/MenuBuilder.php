@@ -406,8 +406,6 @@ class MenuBuilder {
      */
     protected function getHref(array $options)
     {
-        if (isset($options['items'])) return '#';
-
         if (isset($options['url']))
         {
             $secure = array_get($options, 'secure', false);
@@ -420,7 +418,7 @@ class MenuBuilder {
             return $this->hrefFromRoute($options['route']);
         }
 
-        return $this->url->current();
+        return isset($options['items']) ? '#' : $this->url->current();
     }
 
     /**
