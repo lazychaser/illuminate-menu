@@ -110,6 +110,7 @@ You can specify an array of following options:
 *   `route` to specify a route, possibly with parameters
 *   `secure`; specify `true` to make `url` be secure (doesn't affect `route` option)
 *   `items` is an array of items for drop down menu
+*   `linkOptions` is an array of additional link attributes
 
 Changing the state of the item:
 

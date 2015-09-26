@@ -29,7 +29,7 @@ class MenuBuilder {
      *
      * @var array
      */
-    protected $reserved = [ 'route', 'url', 'secure', 'label', 'items',
+    protected $reserved = [ 'route', 'url', 'secure', 'label', 'items', 'linkOptions',
                             'icon', 'badge',
                             'visible', 'active', 'disabled' ];
 
@@ -301,6 +301,11 @@ class MenuBuilder {
         if (isset($options['icon']))
         {
             $label = $this->icon($options['icon']).' '.$label;
+        }
+
+        if (isset($options['linkOptions']))
+        {
+            $attributes = $this->mergeAttributes($attributes, $options['linkOptions']);
         }
 
         return '<a'.$this->attributes($attributes).'>'.$label.'</a>';

@@ -26,7 +26,7 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $url = $this->mockUrlGenerator();
 
         $url->shouldReceive('to')->with('bar', [], true)->andReturn('https://bar');
-        $url->shouldReceive('to')->with('bar', [], false)->times(10)->andReturn('bar');
+        $url->shouldReceive('to')->with('bar', [], false)->times(11)->andReturn('bar');
         $url->shouldReceive('route')->with('bar')->andReturn('bar');
         $url->shouldReceive('current')->andReturn('current');
 
@@ -46,6 +46,7 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $v14 = $this->builder->item([ 'disabled' => true, 'url' => 'bar' ]);
         $v15 = $this->builder->item([ 'disabled' => function () { return true; }, 'url' => 'bar' ]);
         $v16 = $this->builder->item('-');
+        $v17 = $this->builder->item([ 'url' => 'bar', 'linkOptions' => [ 'foo' => 'baz' ] ]);
 
         $this->assertEquals('<li><a href="https://bar">foo</a></li>', $v1);
         $this->assertEquals('<li><a href="bar">foo</a></li>', $v2);
@@ -63,6 +64,7 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('<li class="disabled"><a href="bar"></a></li>', $v14);
         $this->assertEquals('<li class="disabled"><a href="bar"></a></li>', $v15);
         $this->assertEquals('<li class="divider"></li>', $v16);
+        $this->assertEquals('<li><a href="bar" foo="baz"></a></li>', $v17);
     }
 
     public function testRender()
