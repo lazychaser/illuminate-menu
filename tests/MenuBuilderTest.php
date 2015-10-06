@@ -2,6 +2,7 @@
 
 use Illuminate\Html\HtmlBuilder;
 use Illuminate\Html\MenuBuilder as Builder;
+use Illuminate\Html\MenuItem;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Http\Request;
@@ -140,6 +141,17 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $value = $this->builder->item([ 'label' => 'bar' ]);
 
         $this->assertEquals('<li><a href="bar">translated</a></li>', $value);
+    }
+
+    public function testWithObject()
+    {
+        $item = m::mock(MenuItem::class);
+
+        $item->shouldReceive('getMenuItemOptions')->andReturn([ 'label' => 'foo', 'url' => 'bar' ]);
+
+        $v = $this->builder->item($item);
+
+        $this->assertEquals('<li><a href="bar">foo</a></li>', $v);
     }
 
     /**

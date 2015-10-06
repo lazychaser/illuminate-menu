@@ -109,7 +109,7 @@ You can specify an array of following options:
 *   `url` is the url which can be a full URI or local path
 *   `route` to specify a route, possibly with parameters
 *   `secure`; specify `true` to make `url` be secure (doesn't affect `route` option)
-*   `items` is an array of items for drop down menu
+*   `items` is a collection of items for drop down menu
 *   `linkOptions` is an array of additional link attributes
 
 Changing the state of the item:

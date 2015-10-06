@@ -152,6 +152,8 @@ class MenuBuilder {
     {
         if ($value === '-') return '-';
 
+        if ($value instanceof MenuItem) $value = $value->getMenuItemOptions();
+
         if (is_array($value))
         {
             if (is_string($key))
@@ -215,7 +217,7 @@ class MenuBuilder {
     /**
      * Render an item.
      *
-     * @param string|array $label
+     * @param string|array|MenuItem $label
      * @param string|array|null $url
      *
      * @return string
