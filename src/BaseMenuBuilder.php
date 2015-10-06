@@ -2,12 +2,10 @@
 
 namespace Illuminate\Html;
 
-use Illuminate\Contracts\Container\Container;
-use Illuminate\Http\Request;
 use Illuminate\Routing\UrlGenerator;
-use Symfony\Component\Translation\TranslatorInterface;
+use Illuminate\Http\Request;
 
-class MenuBuilder
+abstract class BaseMenuBuilder extends BaseWidget
 {
     /**
      * @var UrlGenerator
@@ -20,17 +18,12 @@ class MenuBuilder
     protected $request;
 
     /**
-     * @var TranslatorInterface
-     */
-    protected $lang;
-
-    /**
      * The list of reserved attributes of the item.
      *
      * @var array
      */
     protected $reserved = [
-        'route', 'url', 'secure', 'label', 'items',
+        'route', 'url', 'secure', 'label',
         'icon', 'badge',
         'visible', 'active', 'disabled'
     ];
@@ -50,19 +43,9 @@ class MenuBuilder
     public $disabledClass = 'disabled';
 
     /**
-     * A class for child menus.
-     *
-     * @var string
-     */
-    public $dropdownClass = 'dropdown-menu';
-
-    /**
      * @var array
      */
-    public $dropdownLinkAttributes = [
-        'class' => 'dropdown-toggle',
-        'data-toggle' => 'dropdown',
-    ];
+    public $linkClass;
 
     /**
      * Initialize the builder.
@@ -72,39 +55,6 @@ class MenuBuilder
     public function __construct(Request $request = null)
     {
         $this->request = $request;
-    }
-
-    /**
-     * Render the menu.
-     *
-     * @param mixed $items
-     * @param array $options
-     *
-     * @return string
-     */
-    public function render($items, array $options = [ 'class' => 'nav' ])
-    {
-        $items = $this->items($items);
-
-        if (empty($items)) return '';
-
-        return '<ul'.$this->attributes($options).'>'.$items.PHP_EOL.'</ul>';
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return string
-     */
-    protected function attributes(array $options)
-    {
-        $html = '';
-
-        foreach ($options as $key => $value) {
-            $html .= ' '.$key.'="'.e($value).'"';
-        }
-
-        return $html;
     }
 
     /**
@@ -147,27 +97,17 @@ class MenuBuilder
      * @param mixed $key
      * @param mixed $value
      *
-     * @return array|string
+     * @return mixed
      */
     protected function convertItem($key, $value)
     {
-        if ($value === '-') return '-';
-
         if ($value instanceof MenuItem) $value = $value->getMenuItemOptions();
 
         if (is_array($value)) {
             if (is_string($key)) $value['label'] = $key;
 
-            if (isset($value['items'])) {
-                $value['items'] = $this->convertItemList($value['items']);
-
-                if (empty($value['items'])) unset($value['items']);
-            }
-
             return $value;
         } elseif (is_string($value)) {
-            if ( ! is_string($key)) return $value;
-
             return [ 'label' => $key, 'url' => $value ];
         }
 
@@ -175,33 +115,13 @@ class MenuBuilder
     }
 
     /**
-     * Remove non-permitted items and repeated dividers.
-     *
      * @param array $items
      *
      * @return array
      */
     protected function cleanItems(array $items)
     {
-        $items = array_values(array_filter($items, [ $this, 'isVisible' ]));
-
-        $data = [ ];
-
-        for ($i = 0, $end = count($items) - 1; $i <= $end; $i++) {
-            if (is_string($items[$i])) {
-                while ($i < $end && is_string($items[$i + 1])) $i++;
-            }
-
-                // Don't add divider as a first item
-            if (($data || $items[$i] !== '-') &&
-                // Don't add divider or header as last item
-                ($i < $end || ! is_string($items[$i]))
-            ) {
-                $data[] = $items[$i];
-            }
-        }
-
-        return $data;
+        return array_values(array_filter($items, [ $this, 'isVisible' ]));
     }
 
     /**
@@ -227,74 +147,65 @@ class MenuBuilder
     }
 
     /**
-     * Render an item.
-     *
-     * @param array|string $options
+     * @param mixed $data
      *
      * @return string
      */
-    protected function renderItem($options)
-    {
-        if ($options === '-') return $this->divider();
-
-        if (is_string($options)) return $this->header($options);
-
-        $href = $this->getHref($options);
-        $link = $this->renderLink($href, $options);
-
-        $attributes = [ ];
-
-        if ($this->isActive($href, $options)) {
-            $this->appendClass($attributes, $this->activeClass);
-        }
-
-        if ($this->isDisabled($options)) {
-            $this->appendClass($attributes, $this->disabledClass);
-        }
-
-        $html = '<li'.$this->attributes($attributes).'>'.$link;
-
-        if (isset($options['items'])) {
-            $html .= PHP_EOL.$this->render(
-                    $options['items'],
-                    [ 'class' => $this->dropdownClass ]
-                );
-        }
-
-        return $html.'</li>';
-    }
+    abstract protected function renderItem($data);
 
     /**
      * Get menu item link.
      *
-     * @param array $options
+     * @param $href
+     * @param array $data
      *
      * @return string
      */
-    protected function renderLink($href, array $options)
+    protected function renderLink($href, array $data)
     {
-        $attributes = array_except($options, $this->reserved);
+        $label = e($this->getLabel($data));
 
-        $attributes['href'] = $href;
-
-        $label = e($this->getLabel($options));
-
-        if (isset($options['badge'])) {
-            $label .= $this->badge(value($options['badge']));
+        if (isset($data['badge'])) {
+            $label .= Helpers::badge(value($data['badge']));
         }
 
-        if (isset($options['items'])) {
-            $attributes = $this->mergeAttributes($attributes,
-                                                 $this->dropdownLinkAttributes);
-
-            $label .= $this->caret();
+        if (isset($data['icon'])) {
+            $label = Helpers::icon($data['icon']).$label;
         }
 
-        if (isset($options['icon'])) {
-            $label = $this->icon($options['icon']).$label;
-        }
+        $attributes = $this->linkAttributes($href, $data);
 
         return '<a'.$this->attributes($attributes).'>'.$label.'</a>';
+    }
+
+    /**
+     * @param string $href
+     * @param array $data
+     *
+     * @return array
+     */
+    protected function linkAttributes($href, array $data)
+    {
+        $class = $this->linkClass;
+
+        return $this->mergeAttributes(compact('href', 'class'),
+                                      array_except($data, $this->reserved));
+    }
+
+    /**
+     * @param array $attributes
+     * @param string $href
+     * @param array $data
+     */
+    protected function appendStateClasses(&$attributes, $href, $data)
+    {
+        if ($this->isActive($href, $data)) {
+            $this->appendClass($attributes, $this->activeClass);
+        }
+
+        if ($this->isDisabled($data)) {
+            $this->appendClass($attributes, $this->disabledClass);
+        }
     }
 
     /**
@@ -404,7 +315,7 @@ class MenuBuilder
             return $this->hrefFromRoute($options['route']);
         }
 
-        return isset($options['items']) ? '#' : $this->url->current();
+        return $this->url ? $this->url->current() : '#';
     }
 
     /**
@@ -457,56 +368,6 @@ class MenuBuilder
     }
 
     /**
-     * Get a caret element.
-     *
-     * @return string
-     */
-    public function caret()
-    {
-        return PHP_EOL.'<span class="caret"></span>';
-    }
-
-    /**
-     * Generate icon.
-     *
-     * @param string $icon
-     *
-     * @return string
-     */
-    protected function icon($icon)
-    {
-        return '<span class="glyphicon glyphicon-'.$icon.'"></span>';
-    }
-
-    /**
-     * @param $badge
-     *
-     * @return string
-     */
-    protected function badge($badge)
-    {
-        return '<span class="badge">'.$badge.'</span>';
-    }
-
-    /**
-     * @return string
-     */
-    public function divider()
-    {
-        return '<li class="divider"></li>';
-    }
-
-    /**
-     * @param string $title
-     *
-     * @return string
-     */
-    public function header($title)
-    {
-        return '<li class="dropdown-header">'.e($title).'</li>';
-    }
-
-    /**
      * @param \Illuminate\Routing\UrlGenerator $url
      */
     public function setUrlGenerator($url)
@@ -515,38 +376,11 @@ class MenuBuilder
     }
 
     /**
-     * @param TranslatorInterface $lang
+     * @param array $reserved
      */
-    public function setTranslator($lang)
+    protected function addReserved(array $reserved)
     {
-        $this->lang = $lang;
-    }
-
-    /**
-     * @param array $attributes
-     */
-    protected function appendClass(array &$attributes, $className)
-    {
-        $attributes['class'] = isset($attributes['class'])
-            ? $attributes['class'] .= ' '.$className
-            : $className;
-    }
-
-    /**
-     * @param array $attributes
-     * @param array $extra
-     *
-     * @return array
-     */
-    protected function mergeAttributes(array $attributes, array $extra)
-    {
-        if (isset($extra['class'])) {
-            $this->appendClass($attributes, $extra['class']);
-
-            unset($extra['class']);
-        }
-
-        return array_merge($attributes, $extra);
+        $this->reserved = array_merge($this->reserved, $reserved);
     }
 
     /**
@@ -562,4 +396,5 @@ class MenuBuilder
 
         throw new \InvalidArgumentException("Unknown menu items type.");
     }
+
 }

@@ -4,41 +4,52 @@ namespace Illuminate\Html;
 
 use Illuminate\Support\ServiceProvider;
 
-class MenuServiceProvider extends ServiceProvider {
+class MenuServiceProvider extends ServiceProvider
+{
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = true;
 
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = true;
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->singleton(NavBuilder::class, function ($app) {
+            $instance = new NavBuilder($app->make('request'));
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-		$this->app->singleton('menu', function ($app)
-        {
-            $menu = new MenuBuilder($app->make('request'));
+            $instance->setUrlGenerator($app->make('url'));
+            $instance->setTranslator($app->make('translator'));
 
-            $menu->setUrlGenerator($app->make('url'));
-            $menu->setTranslator($app->make('translator'));
-
-            return $menu;
+            return $instance;
         });
-	}
 
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return array('menu');
-	}
+        $this->app->singleton(DropdownBuilder::class, function ($app) {
+            $instance = new DropdownBuilder($app->make('request'));
+
+            $instance->setUrlGenerator($app->make('url'));
+            $instance->setTranslator($app->make('translator'));
+
+            return $instance;
+        });
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            NavBuilder::class,
+            DropdownBuilder::class,
+        ];
+    }
 
 }

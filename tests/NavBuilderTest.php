@@ -1,15 +1,13 @@
 <?php
 
-use Illuminate\Html\HtmlBuilder;
-use Illuminate\Html\MenuBuilder as Builder;
+use Illuminate\Html\DropdownBuilder;
+use Illuminate\Html\NavBuilder as Builder;
 use Illuminate\Html\MenuItem;
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Routing\RouteCollection;
 use Illuminate\Http\Request;
 use Mockery as m;
 
-class MenuBuilderTest extends PHPUnit_Framework_TestCase {
-
+class NavBuilderTest extends PHPUnit_Framework_TestCase
+{
     /**
      * @var Builder
      */
@@ -46,28 +44,24 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $v13 = $this->builder->item([ 'label' => 'foo' ]);
         $v14 = $this->builder->item([ 'disabled' => true, 'url' => 'bar' ]);
         $v15 = $this->builder->item([ 'disabled' => function () { return true; }, 'url' => 'bar' ]);
-        $v16 = $this->builder->item('-');
-        $v17 = $this->builder->item('Header');
         $v18 = $this->builder->item([ 'label' => 'foo', 'href' => 'javascript:void;', 'onclick' => 'test();' ]);
 
-        $this->assertEquals('<li><a href="https://bar">foo</a></li>', $v1);
-        $this->assertEquals('<li><a href="bar">foo</a></li>', $v2);
-        $this->assertEquals('<li><a href="bar"><span class="glyphicon glyphicon-baz"></span>foo</a></li>', $v3);
-        $this->assertEquals('<li><a href="bar">foo<span class="badge">1</span></a></li>', $v4);
-        $this->assertEquals('<li><a href="bar">foo<span class="badge">1</span></a></li>', $v5);
-        $this->assertEquals('<li><a href="bar">foo</a></li>', $v6);
+        $this->assertEquals('<li class="nav-item"><a href="https://bar" class="nav-link">foo</a></li>', $v1);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">foo</a></li>', $v2);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link"><span class="glyphicon glyphicon-baz"></span>foo</a></li>', $v3);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">foo<span class="badge">1</span></a></li>', $v4);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">foo<span class="badge">1</span></a></li>', $v5);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">foo</a></li>', $v6);
         $this->assertEquals('', $v7);
-        $this->assertEquals('<li><a href="bar"></a></li>', $v8);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link"></a></li>', $v8);
         $this->assertEquals('', $v9);
-        $this->assertEquals('<li class="active"><a class="test" href="bar"></a></li>', $v10);
-        $this->assertEquals('<li class="active"><a href="bar"></a></li>', $v11);
-        $this->assertEquals('<li><a rel="baz" href="bar"></a></li>', $v12);
-        $this->assertEquals('<li><a href="current">foo</a></li>', $v13);
-        $this->assertEquals('<li class="disabled"><a href="bar"></a></li>', $v14);
-        $this->assertEquals('<li class="disabled"><a href="bar"></a></li>', $v15);
-        $this->assertEquals('<li class="divider"></li>', $v16);
-        $this->assertEquals('<li class="dropdown-header">Header</li>', $v17);
-        $this->assertEquals('<li><a href="javascript:void;" onclick="test();">foo</a></li>', $v18);
+        $this->assertEquals('<li class="nav-item active"><a href="bar" class="nav-link test"></a></li>', $v10);
+        $this->assertEquals('<li class="nav-item active"><a href="bar" class="nav-link"></a></li>', $v11);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link" rel="baz"></a></li>', $v12);
+        $this->assertEquals('<li class="nav-item"><a href="current" class="nav-link">foo</a></li>', $v13);
+        $this->assertEquals('<li class="nav-item disabled"><a href="bar" class="nav-link"></a></li>', $v14);
+        $this->assertEquals('<li class="nav-item disabled"><a href="bar" class="nav-link"></a></li>', $v15);
+        $this->assertEquals('<li class="nav-item"><a href="javascript:void;" class="nav-link" onclick="test();">foo</a></li>', $v18);
     }
 
     public function testRender()
@@ -76,21 +70,15 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
 
         $url->shouldReceive('to')->with('bar', [], false)->times(4)->andReturn('bar');
 
-        $def = '<ul class="nav">'.PHP_EOL.'<li><a href="bar">foo</a></li>'.PHP_EOL.'</ul>';
+        $def = '<ul class="nav">'.PHP_EOL.'<li class="nav-item"><a href="bar" class="nav-link">foo</a></li>'.PHP_EOL.'</ul>';
 
         $v1 = $this->builder->render([ 'foo' => 'bar' ]);
         $v3 = $this->builder->render([ [ 'url' => 'bar', 'label' => 'foo' ] ]);
         $v4 = $this->builder->render(
             [
-                'Header1',
-                '-',
-                'Header 2',
                 'foo' => 'bar',
-                '-',
                 [ 'visible' => false ],
-                '-', '-',
                 'baz' => 'bar',
-                '-',
             ],
 
             []
@@ -102,10 +90,8 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             '<ul>'.PHP_EOL.
-            '<li class="dropdown-header">Header 2</li>'.PHP_EOL.
-            '<li><a href="bar">foo</a></li>'.PHP_EOL.
-            '<li class="divider"></li>'.PHP_EOL.
-            '<li><a href="bar">baz</a></li>'.PHP_EOL.
+            '<li class="nav-item"><a href="bar" class="nav-link">foo</a></li>'.PHP_EOL.
+            '<li class="nav-item"><a href="bar" class="nav-link">baz</a></li>'.PHP_EOL.
             '</ul>', $v4);
 
         $this->assertEquals('', $v5);
@@ -117,13 +103,18 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
 
         $url->shouldReceive('to')->with('baz', [], false)->andReturn('baz');
 
-        $value = $this->builder->item([ 'label' => 'foo', 'items' => [ 'bar' => 'baz' ] ]);
+        $ddBuilder = m::mock(DropdownBuilder::class);
 
-        $this->assertEquals('<li>'.
-            '<a href="#" class="dropdown-toggle" data-toggle="dropdown">foo'.PHP_EOL.'<span class="caret"></span></a>'.PHP_EOL.
-            '<ul class="dropdown-menu">'.PHP_EOL.
-                '<li><a href="baz">bar</a></li>'.PHP_EOL.
-            '</ul></li>', $value);
+        $this->builder->setDropdownBuilder($ddBuilder);
+
+        $ddBuilder->shouldReceive('render')->andReturn('dropdown');
+
+        $value = $this->builder->item([ 'label' => 'foo', 'dropdown' => [ 'bar' => 'baz' ] ]);
+
+        $this->assertEquals('<li class="nav-item">'.
+                            '<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">foo</a>'.PHP_EOL.
+                            'dropdown'.
+                            '</li>', $value);
     }
 
     public function testUrlWithParameters()
@@ -141,9 +132,9 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
         $v2 = $this->builder->item([ 'url' => [ 'foo', 'baz' => 'bar' ]]);
         $v3 = $this->builder->item([ 'route' => [ 'foo', 'bar' => 'baz' ]]);
 
-        $this->assertEquals('<li class="active"><a href="http://localhost/foo?bar=baz"></a></li>', $v1);
-        $this->assertEquals('<li><a href="http://localhost/foo?baz=bar"></a></li>', $v2);
-        $this->assertEquals('<li class="active"><a href="http://localhost/foo?bar=baz"></a></li>', $v3);
+        $this->assertEquals('<li class="nav-item active"><a href="http://localhost/foo?bar=baz" class="nav-link"></a></li>', $v1);
+        $this->assertEquals('<li class="nav-item"><a href="http://localhost/foo?baz=bar" class="nav-link"></a></li>', $v2);
+        $this->assertEquals('<li class="nav-item active"><a href="http://localhost/foo?bar=baz" class="nav-link"></a></li>', $v3);
     }
 
     public function testTrans()
@@ -157,7 +148,7 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
 
         $value = $this->builder->item([ 'label' => 'bar' ]);
 
-        $this->assertEquals('<li><a href="bar">translated</a></li>', $value);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">translated</a></li>', $value);
     }
 
     public function testWithObject()
@@ -168,7 +159,7 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
 
         $v = $this->builder->item($item);
 
-        $this->assertEquals('<li><a href="bar">foo</a></li>', $v);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">foo</a></li>', $v);
     }
 
     /**
@@ -180,5 +171,4 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
 
         return $url;
     }
-
 }
