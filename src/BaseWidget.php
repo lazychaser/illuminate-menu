@@ -12,14 +12,6 @@ abstract class BaseWidget
     protected $lang;
 
     /**
-     * @param TranslatorInterface $lang
-     */
-    public function setTranslator($lang)
-    {
-        $this->lang = $lang;
-    }
-
-    /**
      * @param array $options
      *
      * @return string
@@ -60,6 +52,14 @@ abstract class BaseWidget
         }
 
         return array_merge($attributes, $extra);
+    }
+
+    /**
+     * @param TranslatorInterface $lang
+     */
+    public function setTranslator($lang)
+    {
+        $this->lang = $lang;
     }
 
 }

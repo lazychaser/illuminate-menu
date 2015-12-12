@@ -48,16 +48,6 @@ abstract class BaseMenuBuilder extends BaseWidget
     public $linkClass;
 
     /**
-     * Initialize the builder.
-     *
-     * @param Request $request
-     */
-    public function __construct(Request $request = null)
-    {
-        $this->request = $request;
-    }
-
-    /**
      * Render a list of menu items.
      *
      * @param mixed $items
@@ -107,7 +97,9 @@ abstract class BaseMenuBuilder extends BaseWidget
             if (is_string($key)) $value['label'] = $key;
 
             return $value;
-        } elseif (is_string($value)) {
+        }
+
+        if (is_string($value)) {
             return [ 'label' => $key, 'url' => $value ];
         }
 
@@ -166,16 +158,38 @@ abstract class BaseMenuBuilder extends BaseWidget
         $label = e($this->getLabel($data));
 
         if (isset($data['badge'])) {
-            $label .= Helpers::badge(value($data['badge']));
+            $label = $this->addBadge($label, value($data['badge']));
         }
 
         if (isset($data['icon'])) {
-            $label = Helpers::icon($data['icon']).$label;
+            $label = $this->addIcon($label, $data['icon']);
         }
 
         $attributes = $this->linkAttributes($href, $data);
 
         return '<a'.$this->attributes($attributes).'>'.$label.'</a>';
+    }
+
+    /**
+     * @param string $label
+     * @param string $value
+     *
+     * @return string
+     */
+    protected function addBadge($label, $value)
+    {
+        return $label.Helpers::badge($value);
+    }
+
+    /**
+     * @param string $label
+     * @param string $value
+     *
+     * @return string
+     */
+    protected function addIcon($label, $value)
+    {
+        return Helpers::icon($value).' '.$label;
     }
 
     /**
@@ -199,11 +213,11 @@ abstract class BaseMenuBuilder extends BaseWidget
      */
     protected function appendStateClasses(&$attributes, $href, $data)
     {
-        if ($this->isActive($href, $data)) {
+        if ($this->activeClass && $this->isActive($href, $data)) {
             $this->appendClass($attributes, $this->activeClass);
         }
 
-        if ($this->isDisabled($data)) {
+        if ($this->disabledClass && $this->isDisabled($data)) {
             $this->appendClass($attributes, $this->disabledClass);
         }
     }
@@ -217,9 +231,13 @@ abstract class BaseMenuBuilder extends BaseWidget
      */
     public function isActive($href, array $options)
     {
-        if (isset($options['active'])) return value($options['active']);
+        if (isset($options['active'])) {
+            return value($options['active']);
+        }
 
-        if ( ! $href || $href === '#') return false;
+        if ( ! $this->request || ! $href || $href === '#') {
+            return false;
+        }
 
         // Check if url leads to the main page
         if ($href === $this->request->root()) {
@@ -232,12 +250,18 @@ abstract class BaseMenuBuilder extends BaseWidget
 
             parse_str(substr($href, $pos + 1), $params);
 
-            if ( ! $this->requestHasParameters($params)) return false;
+            if ( ! $this->requestHasParameters($params)) {
+                return false;
+            }
 
             $href = substr($href, 0, $pos);
         }
 
-        return rtrim($href, '/') === $this->request->url();
+        if (rtrim($href, '/') != $this->request->url()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -254,7 +278,9 @@ abstract class BaseMenuBuilder extends BaseWidget
         $parameters = $this->request->query;
 
         foreach ($params as $key => $value) {
-            if ( ! $parameters->has($key) || $parameters->get($key) != $value) return false;
+            if ( ! $parameters->has($key) || $parameters->get($key) != $value) {
+                return false;
+            }
         }
 
         return true;
@@ -269,7 +295,9 @@ abstract class BaseMenuBuilder extends BaseWidget
      */
     protected function isVisible($options)
     {
-        if ( ! is_array($options)) return true;
+        if ( ! is_array($options)) {
+            return true;
+        }
 
         if (isset($options['visible'])) {
             return value($options['visible']);
@@ -285,7 +313,9 @@ abstract class BaseMenuBuilder extends BaseWidget
      */
     protected function isDisabled($options)
     {
-        if ( ! is_array($options)) return false;
+        if ( ! is_array($options)) {
+            return false;
+        }
 
         if (isset($options['disabled'])) {
             return value($options['disabled']);
@@ -303,7 +333,9 @@ abstract class BaseMenuBuilder extends BaseWidget
      */
     protected function getHref(array $options)
     {
-        if (isset($options['href'])) return $options['href'];
+        if (isset($options['href'])) {
+            return $options['href'];
+        }
 
         if (isset($options['url'])) {
             $secure = array_get($options, 'secure', false);
@@ -328,9 +360,13 @@ abstract class BaseMenuBuilder extends BaseWidget
      */
     protected function hrefFromUrl($url, $secure)
     {
-        if ( ! $this->url) return $url;
+        if ( ! $this->url) {
+            return $url;
+        }
 
-        if ( ! is_array($url)) return $this->url->to($url, [ ], $secure);
+        if ( ! is_array($url)) {
+            return $this->url->to($url, [ ], $secure);
+        }
 
         return $this->url->to($url[0], array_splice($url, 1), $secure);
     }
@@ -344,7 +380,9 @@ abstract class BaseMenuBuilder extends BaseWidget
      */
     protected function hrefFromRoute($route)
     {
-        if ( ! is_array($route)) return $this->url->route($route);
+        if ( ! is_array($route)) {
+            return $this->url->route($route);
+        }
 
         return $this->url->route($route[0], array_splice($route, 1));
     }
@@ -368,14 +406,6 @@ abstract class BaseMenuBuilder extends BaseWidget
     }
 
     /**
-     * @param \Illuminate\Routing\UrlGenerator $url
-     */
-    public function setUrlGenerator($url)
-    {
-        $this->url = $url;
-    }
-
-    /**
      * @param array $reserved
      */
     protected function addReserved(array $reserved)
@@ -394,7 +424,38 @@ abstract class BaseMenuBuilder extends BaseWidget
 
         if ($items instanceof \IteratorAggregate) return $items;
 
-        throw new \InvalidArgumentException("Unknown menu items type.");
+        throw new \InvalidArgumentException('Unknown menu items type.');
     }
 
+    /**
+     * @param \Illuminate\Routing\UrlGenerator $url
+     */
+    public function setUrlGenerator($url)
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @return UrlGenerator
+     */
+    public function getUrlGenerator()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
 }

@@ -17,7 +17,9 @@ class NavBuilderTest extends PHPUnit_Framework_TestCase
     {
         $this->request = Request::create('/foo', 'GET', [ 'bar' => 'baz' ]);
 
-        $this->builder = new Builder($this->request);
+        $this->builder = new Builder();
+
+        $this->builder->setRequest($this->request);
     }
 
     public function testWithUrl()
@@ -48,7 +50,7 @@ class NavBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('<li class="nav-item"><a href="https://bar" class="nav-link">foo</a></li>', $v1);
         $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">foo</a></li>', $v2);
-        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link"><span class="glyphicon glyphicon-baz"></span>foo</a></li>', $v3);
+        $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link"><span class="glyphicon glyphicon-baz"></span> foo</a></li>', $v3);
         $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">foo<span class="badge">1</span></a></li>', $v4);
         $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">foo<span class="badge">1</span></a></li>', $v5);
         $this->assertEquals('<li class="nav-item"><a href="bar" class="nav-link">foo</a></li>', $v6);

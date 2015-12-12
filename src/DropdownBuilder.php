@@ -4,7 +4,6 @@ namespace Illuminate\Html;
 
 class DropdownBuilder extends BaseMenuBuilder
 {
-
     /**
      * @var string
      */
@@ -75,13 +74,15 @@ class DropdownBuilder extends BaseMenuBuilder
      */
     protected function renderItem($data)
     {
-        if ($data === '-') return $this->divider();
+        if ($data === '-') {
+            return $this->divider();
+        }
 
-        if (is_string($data)) return $this->header($data);
+        if (is_string($data)) {
+            return $this->header($data);
+        }
 
-        $href = $this->getHref($data);
-
-        return $this->renderLink($href, $data);
+        return $this->renderLink($this->getHref($data), $data);
     }
 
     /**

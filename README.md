@@ -20,7 +20,7 @@ Installation
 Install using Composer:
 
 ```
-composer require kalnoy/illuminate-menu:~1.0
+composer require kalnoy/illuminate-menu:~2.0
 ```
 
 Add a service provider:
@@ -35,33 +35,34 @@ And a facade:
 
 ```php
 'aliases' => [
-    'Menu' => 'Illuminate\Support\Facades\Menu',
+    'Nav' => 'Illuminate\Support\Facades\Nav',
+    'Dropdown' => 'Illuminate\Support\Facades\Dropdown',
 ],
 ```
 
 Documentation
 =============
 
-Rendering a menu:
+Rendering navigation:
 
 ```php
-{!! Menu::render($items, $attributes) !!}
+{!! Nav::render($items, $attributes) !!}
 ```
 
 Where `$attributes` is optional array of html attributes for `ul` element.
 
-Rendering a list of menu items:
+Rendering a list of menu items without wrapper element:
 
 ```php
-<ul>{!! Menu::items($items) !!}</ul>
+<ul>{!! Nav::items($items) !!}</ul>
 ```
 
 Rendering a single menu item:
 
 ```php
-{!! Menu::item($label, $url) !!}
-{!! Menu::item($label, $options) !!}
-{!! Menu::item($options) !!}
+{!! Nav::item($label, $url) !!}
+{!! Nav::item($label, $options) !!}
+{!! Nav::item($options) !!}
 ```
 
 See a list of available options [below](#item-options).
@@ -69,7 +70,7 @@ See a list of available options [below](#item-options).
 Basic example:
 
 ```php
-Menu::render([
+Nav::render([
     'Link to url' => 'bar',
     'Link to external url' => 'http://bar',
     [ 'label' => 'Link to url', 'url' => 'bar' ],
@@ -80,10 +81,10 @@ Menu::render([
 Rendering an item with a drop down menu:
 
 ```php
-{!! Menu::item([
+{!! Nav::item([
     'label' => 'Settings',
     'icon' => 'wrench',
-    'items' => [
+    'dropdown' => [
         'Foo' => 'bar',
         '-', // divider
         'Logout' => [ 'route' => 'logout_path' ],
@@ -94,7 +95,7 @@ Rendering an item with a drop down menu:
 Controlling whether the item is visible:
 
 ```php
-{!! Menu::item([
+{!! Nav::item([
     'label' => 'Foo',
     'url' => 'bar',
     'visible' => function () { return Config::get('app.debug'); },
@@ -106,11 +107,10 @@ Controlling whether the item is visible:
 You can specify an array of following options:
 
 *   `label` is a label of the item, automatically translated, so you can specify lang string id
+*   `href` is a raw `href` attribute on the link
 *   `url` is the url which can be a full URI or local path
 *   `route` to specify a route, possibly with parameters
 *   `secure`; specify `true` to make `url` be secure (doesn't affect `route` option)
-*   `items` is a collection of items for drop down menu
-*   `linkOptions` is an array of additional link attributes
 
 Changing the state of the item:
 
@@ -123,7 +123,11 @@ Presentation options:
 
 *   `icon` is a glyphicon id, i.e. `pencil`
 *   `badge` is a value for badge (scalar or closure)
-*   and any other parameter that will be rendered as an attribute for `<li>` element.
+*   and any other parameter that will be rendered as an additional attribute for link element.
+
+##### Nav-specific options
+
+*   `dropdown` is a collection of items for drop down menu
 
 ### Customization
 

@@ -2,8 +2,6 @@
 
 namespace Illuminate\Html;
 
-use Illuminate\Http\Request;
-
 class NavBuilder extends BaseMenuBuilder
 {
     /**
@@ -31,13 +29,9 @@ class NavBuilder extends BaseMenuBuilder
 
     /**
      * NavBuilder constructor.
-     *
-     * @param Request $request
      */
-    public function __construct(Request $request)
+    public function __construct()
     {
-        parent::__construct($request);
-
         $this->addReserved([ 'dropdown' ]);
     }
 
@@ -74,7 +68,9 @@ class NavBuilder extends BaseMenuBuilder
     {
         $items = $this->items($items);
 
-        if (empty($items)) return '';
+        if (empty($items)) {
+            return '';
+        }
 
         return '<ul'.$this->attributes($attributes).'>'.$items.PHP_EOL.'</ul>';
     }
