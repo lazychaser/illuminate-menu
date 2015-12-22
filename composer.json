@@ -15,13 +15,13 @@
     ],
 
     "require": {
-        "php": ">=5.4.0",
-        "illuminate/http": ">=4.2.0,<5.2.0",
-        "illuminate/support": ">=4.2.0,<5.2.0"
+        "php": ">=5.4.0"
     },
 
     "require-dev": {
-        "mockery/mockery": "~0.9"
+        "mockery/mockery": "~0.9",
+        "illuminate/http": "4.2 - 5.2",
+        "illuminate/support": "4.2 - 5.2"
     },
 
     "autoload": {

@@ -60,16 +60,6 @@ class MenuBuilder {
     public $dropdownLinkAttributes = [ 'class' => 'dropdown-toggle', 'data-toggle' => 'dropdown' ];
 
     /**
-     * Initialize the builder.
-     *
-     * @param Request $request
-     */
-    public function __construct(Request $request = null)
-    {
-        $this->request = $request;
-    }
-
-    /**
      * Render the menu.
      *
      * @param mixed $items
@@ -322,7 +312,7 @@ class MenuBuilder {
     {
         if (isset($options['active'])) return value($options['active']);
 
-        if ( ! $href || $href === '#') return false;
+        if ( ! $this->request || ! $href || $href === '#') return false;
 
         // Check if url leads to the main page
         if ($href === $this->request->root())
@@ -509,14 +499,6 @@ class MenuBuilder {
     }
 
     /**
-     * @param \Illuminate\Routing\UrlGenerator $url
-     */
-    public function setUrlGenerator($url)
-    {
-        $this->url = $url;
-    }
-
-    /**
      * @return string
      */
     public function divider()
@@ -525,11 +507,27 @@ class MenuBuilder {
     }
 
     /**
+     * @param \Illuminate\Routing\UrlGenerator $url
+     */
+    public function setUrlGenerator($url)
+    {
+        $this->url = $url;
+    }
+
+    /**
      * @param TranslatorInterface $lang
      */
     public function setTranslator($lang)
     {
         $this->lang = $lang;
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
     }
 
     /**

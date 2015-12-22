@@ -18,7 +18,9 @@ class MenuBuilderTest extends PHPUnit_Framework_TestCase {
     {
         $this->request = Request::create('/foo', 'GET', [ 'bar' => 'baz' ]);
 
-        $this->builder = new Builder($this->request);
+        $this->builder = new Builder();
+
+        $this->builder->setRequest($this->request);
     }
 
     public function testWithUrl()
