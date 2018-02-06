@@ -20,14 +20,26 @@
 
     "require-dev": {
         "mockery/mockery": "~0.9",
-        "illuminate/http": "4.2 - 5.2",
-        "illuminate/support": "4.2 - 5.2"
+        "illuminate/http": "4.2 - 5.5",
+        "illuminate/support": "4.2 - 5.5"
     },
 
     "autoload": {
         "psr-4": {
             "Illuminate\\Html\\": "src/",
             "Illuminate\\Support\\Facades\\": "facade/"
+        }
+    },
+
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Illuminate\\Html\\MenuServiceProvider"
+            ],
+
+            "aliases": {
+                "Menu": "Illuminate\\Support\\Facades\\Menu"
+            }
         }
     },
 
