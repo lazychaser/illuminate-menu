@@ -404,7 +404,7 @@ class MenuBuilder {
     {
         if (isset($options['url']))
         {
-            $secure = array_get($options, 'secure', false);
+            $secure = Arr::get($options, 'secure', false);
 
             return $this->hrefFromUrl($options['url'], $secure);
         }
