@@ -460,7 +460,7 @@ class MenuBuilder {
         {
             $label = $options['label'];
 
-            return is_null($this->lang) ? $label : $this->lang->trans($label);
+            return is_null($this->lang) ? $label : $this->lang->get($label);
         }
 
         return '';
