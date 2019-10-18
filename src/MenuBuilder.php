@@ -5,6 +5,7 @@ namespace Illuminate\Html;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Arr;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class MenuBuilder {
@@ -239,7 +240,7 @@ class MenuBuilder {
         $href = $this->getHref($options);
         $link = $this->renderLink($href, $options);
 
-        $attributes = array_except($options, $this->reserved);
+        $attributes = Arr::except($options, $this->reserved);
 
         if ($this->isActive($href, $options))
         {
